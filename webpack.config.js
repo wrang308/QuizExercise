@@ -1,13 +1,13 @@
 var path = require('path')
 
 module.exports = {
-  entry: './client/source/js/app.js',
+  entry: './src/js/app.js',
   output: {
     filename: 'build.js',
-    path: path.resolve(__dirname, 'client/source')
+    path: path.resolve(__dirname, 'dist')
   },
   devServer: {
-    contentBase: path.join(__dirname, 'client/source'),
+    contentBase: path.join(__dirname, 'src'),
     port: 4000,
     public: 'localhost:4000'
   },
