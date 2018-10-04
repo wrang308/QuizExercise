@@ -1,0 +1,25 @@
+
+body{
+    width: 100%;
+}
+
+nav{
+
+display: inline-block;
+
+}
+
+#currentName{
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
+
+
+
+#getName{
+    background-color: aliceblue;
+    width: inherit;
+
+}
