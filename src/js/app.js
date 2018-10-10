@@ -1,15 +1,19 @@
-var totalTime = 0
-var timerInterval
-var highScore = []
-var highScoreNames = []
-var name
-var responseURL
-var url = 'http://vhost3.lnu.se:20080/question/1'
-var multipleAnswer = false
+let totalTime = 0
+let timerInterval
+let questionInterval
+let highScore = []
+let highScoreNames = []
+let name
+let responseURL
+let url = 'http://vhost3.lnu.se:20080/question/1'
+let multipleAnswer = false
+let questionTime = 0
+let newQuestion
 
 if (window.localStorage.getItem('score') === null) {
   console.log('initializing array')
-  highScore = [0, 0, 0, 0, 0]
+  highScore = [9999, 9999, 9999, 9999, 9999]
+  highScoreNames = ['empty', 'empty', 'empty', 'empty', 'empty']
 } else {
   highScore = JSON.parse(window.localStorage.getItem('score'))
 }
@@ -34,35 +38,26 @@ var buttonReset = document.querySelector('#reset')
 buttonReset.addEventListener('click', jsReset)
 
 function jsReset () {
-  highScore = [0, 0, 0, 0, 0]
-  highScoreNames = ['', '', '', '', '']
+  highScore = [9999, 9999, 9999, 9999, 9999]
+  highScoreNames = ['empty', 'empty', 'empty', 'empty', 'empty']
   window.localStorage.setItem('score', JSON.stringify(highScore))
   window.localStorage.setItem('highScoreNames', JSON.stringify(highScoreNames))
 }
 
 function jsGetName () {
-  if (totalTime === 0) {
-    highScore = [0, 0, 0, 0, 0]
-  }
   name = document.getElementById('input1').value
   var currentName = document.querySelector('#currentName')
   currentName.innerHTML = 'current name: ' + name
   console.log(name)
   console.log(totalTime)
   console.log('jsGetName = ' + totalTime)
-  addToWebStorage(totalTime, name)
-  clearInterval(timerInterval)
+  // addToWebStorage(totalTime, name)
+  // clearInterval(timerInterval)
 
   // document.location.href = 'game.html'
 }
 // function that increments totalTime so we can keep track on total the total time a user
 // have used on the game.
-function totalTimeFunc () {
-  timerInterval = setInterval(function () {
-    totalTime++
-    document.querySelector('#totalTime').innerHTML = 'total time = ' + totalTime
-  }, 1000)
-}
 
 function addToWebStorage (number, fncName) {
   for (var i = 0; i <= 4; i++) {
@@ -73,7 +68,7 @@ function addToWebStorage (number, fncName) {
     } */
     var tmp
     var tmpName
-    if (highScore[i] < number) {
+    if (highScore[i] > number) {
       tmpName = highScoreNames[i]
       highScoreNames[i] = fncName
       fncName = tmpName
@@ -101,6 +96,7 @@ function addToWebStorage (number, fncName) {
  **/
 
 function initQuestion () {
+  // questionTime = 0
   window.fetch(url)
     .then(res => res.json())
     .then(data => {
@@ -136,16 +132,24 @@ function postAnswer () {
     .then(result => result.json())
     .then(data => {
       console.log(data)
+      clearTimeout(questionInterval)
       if (data.message === 'Correct answer!' && data.nextURL === undefined) {
-        // add highscore
+        addToWebStorage(totalTime, name)
         console.log('finished game')
-      } else if (data.message === 'Correct answer!'){
+        // clearInterval(timerInterval)
+        finishGame()
+      } else if (data.message === 'Correct answer!') {
         nextQuestion(data.nextURL)
+      } else {
+        // clearInterval(timerInterval)
+        finishGame()
       }
     })
 }
 
-function nextQuestion(startURL){
+function nextQuestion (startURL) {
+  newQuestion = true
+  questionTime = 0
   window.fetch(startURL)
     .then(res => res.json())
     .then(data => {
@@ -156,13 +160,12 @@ function nextQuestion(startURL){
       if (data.alternatives !== undefined) {
         multipleAnswer = true
         for (var alt in data.alternatives) {
-          let radioquestion = data.alternatives[alt]
-          output += '<p>' + radioquestion + '</p>'
+          let radioQuestion = data.alternatives[alt]
+          output += '<p>' + radioQuestion + '</p>'
           output += '<input type="radio" name="answer" value=' + alt + '>'
         }
       } else {
         multipleAnswer = false
-        // a
         output += '<div><input id="answer" type="text"></div>'
       }
       output += '<button id="submitAnswer">Submit Answer</button></div>'
@@ -171,6 +174,44 @@ function nextQuestion(startURL){
     })
 }
 
+function finishGame () {
+  clearInterval(timerInterval)
+  let output = '<div id="questionContainer"><h2>Game over</h2>'
+  output += '<h3>High score</h3>'
+  for (var i = 0; i <= 4; i++) {
+    output += '<p>' + highScoreNames[i] + ':' + highScore[i] + '</p>'
+  }
+  // output += '<button id="playAgain">Play again</button>'
+  document.getElementById('output').innerHTML = output
+  // document.getElementById('playAgain').addEventListener('click', initQuestion)
+}
+
+// function questionTimeFunc () {
+//  questionInterval = setInterval(function () {
+//  }, 1000)
+// }
+
+function tst () {
+  if (newQuestion === true) {
+    questionTime = 0
+    newQuestion = false
+  }
+  totalTime++
+  // questionTime++
+  questionTime++
+  document.querySelector('#totalTime').innerHTML = 'total time = ' + totalTime
+  document.querySelector('#questionTime').innerHTML = 'remaining time = ' + (20 - questionTime)
+  console.log('questionTime = ' + questionTime)
+  if (questionTime === 20) {
+    finishGame()
+  }
+}
+
+function totalTimeFunc () {
+  timerInterval = setInterval(tst, 1000)
+}
+
 initQuestion()
 totalTimeFunc()
+// questionTimeFunc()
 addToWebStorage()
