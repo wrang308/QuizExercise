@@ -1,6 +1,6 @@
 let totalTime = 0
 let timerInterval
-let questionInterval
+let questionInterval = 10
 let highScore = []
 let highScoreNames = []
 let name
@@ -8,7 +8,6 @@ let responseURL
 let url = 'http://vhost3.lnu.se:20080/question/1'
 let multipleAnswer = false
 let questionTime = 0
-let newQuestion
 
 if (window.localStorage.getItem('score') === null) {
   console.log('initializing array')
@@ -148,7 +147,6 @@ function postAnswer () {
 }
 
 function nextQuestion (startURL) {
-  newQuestion = true
   questionTime = 0
   window.fetch(startURL)
     .then(res => res.json())
@@ -192,12 +190,7 @@ function finishGame () {
 // }
 
 function tst () {
-  if (newQuestion === true) {
-    questionTime = 0
-    newQuestion = false
-  }
   totalTime++
-  // questionTime++
   questionTime++
   document.querySelector('#totalTime').innerHTML = 'total time = ' + totalTime
   document.querySelector('#questionTime').innerHTML = 'remaining time = ' + (20 - questionTime)
@@ -209,6 +202,8 @@ function tst () {
 
 function totalTimeFunc () {
   timerInterval = setInterval(tst, 1000)
+  console.log(timerInterval)
+  clearInterval(9)
 }
 
 initQuestion()
