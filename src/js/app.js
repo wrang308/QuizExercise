@@ -23,16 +23,16 @@ if (window.localStorage.getItem('score') === null) {
 highScoreNames = JSON.parse(window.localStorage.getItem('highScoreNames'))
 
 // ...
-var storedScores = JSON.parse(window.localStorage.getItem('score'))
-var storedNames = JSON.parse(window.localStorage.getItem('highScoreNames'))
+let storedScores = JSON.parse(window.localStorage.getItem('score'))
+let storedNames = JSON.parse(window.localStorage.getItem('highScoreNames'))
 
 console.log(storedScores)
 console.log(storedNames)
-var buttonGetName = document.querySelector('#getName')
+let buttonGetName = document.querySelector('#getName')
 
 buttonGetName.addEventListener('click', jsGetName)
 
-var buttonReset = document.querySelector('#reset')
+let buttonReset = document.querySelector('#reset')
 
 buttonReset.addEventListener('click', jsReset)
 
@@ -45,7 +45,7 @@ function jsReset () {
 
 function jsGetName () {
   name = document.getElementById('input1').value
-  var currentName = document.querySelector('#currentName')
+  let currentName = document.querySelector('#currentName')
   currentName.innerHTML = 'current name: ' + name
   console.log(name)
   console.log(totalTime)
@@ -59,14 +59,9 @@ function jsGetName () {
 // have used on the game.
 
 function addToWebStorage (number, fncName) {
-  for (var i = 0; i <= 4; i++) {
-    /** if (window.localStorage[i] > number) {
-      console.log('number = ' + number.toString())
-    } else {
-      window.localStorage[i] = number
-    } */
-    var tmp
-    var tmpName
+  for (let i = 0; i <= 4; i++) {
+    let tmp
+    let tmpName
     if (highScore[i] > number) {
       tmpName = highScoreNames[i]
       highScoreNames[i] = fncName
@@ -157,7 +152,7 @@ function nextQuestion (startURL) {
       output += data.question
       if (data.alternatives !== undefined) {
         multipleAnswer = true
-        for (var alt in data.alternatives) {
+        for (let alt in data.alternatives) {
           let radioQuestion = data.alternatives[alt]
           output += '<p>' + radioQuestion + '</p>'
           output += '<input type="radio" name="answer" value=' + alt + '>'
@@ -176,7 +171,7 @@ function finishGame () {
   clearInterval(timerInterval)
   let output = '<div id="questionContainer"><h2>Game over</h2>'
   output += '<h3>High score</h3>'
-  for (var i = 0; i <= 4; i++) {
+  for (let i = 0; i <= 4; i++) {
     output += '<p>' + highScoreNames[i] + ':' + highScore[i] + '</p>'
   }
   // output += '<button id="playAgain">Play again</button>'
@@ -203,7 +198,7 @@ function tst () {
 function totalTimeFunc () {
   timerInterval = setInterval(tst, 1000)
   console.log(timerInterval)
-  clearInterval(9)
+  // clearInterval(9)
 }
 
 initQuestion()
