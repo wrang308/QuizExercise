@@ -1,6 +1,9 @@
 
 body{
-    width: 100%;
+    width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+
 }
 
 nav{
