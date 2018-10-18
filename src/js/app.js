@@ -11,7 +11,6 @@ let questionTime
 let playing = false
 
 if (window.localStorage.getItem('score') === null) {
-  console.log('initializing array')
   highScore = ['empty', 'empty', 'empty', 'empty', 'empty']
   highScoreNames = ['empty', 'empty', 'empty', 'empty', 'empty']
   window.localStorage.setItem('highScoreNames', JSON.stringify(highScoreNames))
@@ -19,13 +18,9 @@ if (window.localStorage.getItem('score') === null) {
   // addToWebStorage()
 } else {
   highScore = JSON.parse(window.localStorage.getItem('score'))
+  highScoreNames = JSON.parse(window.localStorage.getItem('highScoreNames'))
 }
-highScoreNames = JSON.parse(window.localStorage.getItem('highScoreNames'))
-let storedScores = JSON.parse(window.localStorage.getItem('score'))
-let storedNames = JSON.parse(window.localStorage.getItem('highScoreNames'))
 
-console.log(storedScores)
-console.log(storedNames)
 let buttonGetName = document.querySelector('#getName')
 
 buttonGetName.addEventListener('click', jsGetName)
@@ -35,17 +30,12 @@ function jsGetName () {
   name = document.getElementById('input1').value
   let currentName = document.querySelector('#currentName')
   currentName.innerHTML = 'current name: ' + name
-  console.log(name)
-  console.log(totalTime)
-  console.log('jsGetName = ' + totalTime)
 }
 
 // function that increments totalTime so we can keep track on total the total time a user
 // have used on the game.
 
 function addToWebStorage (number, fncName) {
-  console.log('time = ' + number)
-  console.log('name = ' + fncName)
   let emptyList = true
   for (let i = 0; i <= 4; i++) {
     let tmp
@@ -79,7 +69,6 @@ function initQuestion () {
       .then(data => {
         responseURL = data.nextURL
         let output = '<div id="questionContainer"><h2>Question</h2>'
-        console.log(data)
         output += data.question
         output += '<div><input id="answer" type="text"></div>'
         output += '<button id="submitAnswer">Submit Answer</button></div>'
@@ -99,10 +88,6 @@ function postAnswer () {
   } else {
     answerUser = document.getElementById('answer').value
   }
-  console.log('posting answer')
-  console.log(responseURL)
-  // console.log(document.getElementById('answer').value)
-  //  console.log(answerUser)
   window.fetch(responseURL, {
     method: 'POST',
     headers: {
@@ -112,7 +97,6 @@ function postAnswer () {
   })
     .then(result => result.json())
     .then(data => {
-      console.log(data)
       clearTimeout(questionInterval)
       if (data.message === 'Correct answer!' && data.nextURL === undefined) {
         addToWebStorage(totalTime, name)
@@ -136,7 +120,6 @@ function nextQuestion (startURL) {
     .then(data => {
       responseURL = data.nextURL
       let output = '<div id="questionContainer"><h2>Question</h2>'
-      console.log(data)
       output += data.question
       if (data.alternatives !== undefined) {
         multipleAnswer = true
