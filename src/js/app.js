@@ -1,6 +1,5 @@
 let totalTime = 0
 let timerInterval
-let questionInterval = 10
 let highScore = []
 let highScoreNames = []
 let name
@@ -10,12 +9,12 @@ let multipleAnswer = false
 let questionTime
 let playing = false
 
+// initialize the high score if no high score is found
 if (window.localStorage.getItem('score') === null) {
   highScore = ['empty', 'empty', 'empty', 'empty', 'empty']
   highScoreNames = ['empty', 'empty', 'empty', 'empty', 'empty']
   window.localStorage.setItem('highScoreNames', JSON.stringify(highScoreNames))
   window.localStorage.setItem('score', JSON.stringify(highScore))
-  // addToWebStorage()
 } else {
   highScore = JSON.parse(window.localStorage.getItem('score'))
   highScoreNames = JSON.parse(window.localStorage.getItem('highScoreNames'))
@@ -25,6 +24,10 @@ let buttonGetName = document.querySelector('#getName')
 
 buttonGetName.addEventListener('click', jsGetName)
 
+/**
+ * Simple function that fetches the username
+ */
+
 function jsGetName () {
   initQuestion()
   name = document.getElementById('input1').value
@@ -32,18 +35,21 @@ function jsGetName () {
   currentName.innerHTML = 'current name: ' + name
 }
 
-// function that increments totalTime so we can keep track on total the total time a user
-// have used on the game.
+/**
+* function that increments totalTime so we can keep track on total the total time a user
+* have used on the game.
+*/
 
 function addToWebStorage (number, fncName) {
   let emptyList = true
-  for (let i = 0; i <= 4; i++) {
+  for (let i = 0; i <= 4; i++) { // loop to check every element in high score array
     let tmp
     let tmpName
     if (highScore[i] > number || (highScore[i] === 'empty' && emptyList)) {
-      if (highScore[i] === 'empty') {
+      if (highScore[i] === 'empty') { // logic so it will add high score when the list isn't full
         emptyList = false
       }
+      // logic for changing high score
       tmpName = highScoreNames[i]
       highScoreNames[i] = fncName
       fncName = tmpName
@@ -56,7 +62,10 @@ function addToWebStorage (number, fncName) {
   }
 }
 
-// function that initiate the game
+/**
+* function that initiate the game
+*/
+
 function initQuestion () {
   if (!playing) {
     playing = true
@@ -80,10 +89,13 @@ function initQuestion () {
   }
 }
 
-// function that takes the answer from the user and decides what what to do with the answer
+/**
+* function that takes the answer from the user and decides what what to do with the answer
+*/
+
 function postAnswer () {
   let answerUser
-  if (multipleAnswer) {
+  if (multipleAnswer) { // logic that checks where the users answer should be fetched from
     answerUser = document.querySelector('input[name="answer"]:checked').value
   } else {
     answerUser = document.getElementById('answer').value
@@ -97,7 +109,6 @@ function postAnswer () {
   })
     .then(result => result.json())
     .then(data => {
-      clearTimeout(questionInterval)
       if (data.message === 'Correct answer!' && data.nextURL === undefined) {
         addToWebStorage(totalTime, name)
         console.log('finished game')
@@ -110,7 +121,10 @@ function postAnswer () {
     })
 }
 
-// function that loads the next question and outputs it for the player
+/**
+* function that loads the next question and outputs it for the player
+*/
+
 function nextQuestion (startURL) {
   clearInterval(timerInterval)
   totalTimeFunc()
@@ -138,36 +152,43 @@ function nextQuestion (startURL) {
     })
 }
 
-// function that sets the lost game output for the player
+/**
+* function that sets the lost game output for the player
+*/
+
 function lostGame () {
   clearInterval(timerInterval)
   playing = false
   let output = '<div id="questionContainer"><h2>You lost!</h2>'
-  // output += '<button id="playAgain">Play again</button>'
   document.getElementById('output').innerHTML = output
-  // document.getElementById('playAgain').addEventListener('click', initQuestion)
 }
 
-// function that shows the highscore and finishes the game
+/**
+* function that shows the high score and finishes the game
+*/
+
 function finishGame () {
   clearInterval(timerInterval)
   playing = false
   let output = '<div id="questionContainer"><h2>You won!</h2>'
   output += '<h3>High score</h3>'
-  for (let i = 0; i <= 4; i++) {
+  for (let i = 0; i <= 4; i++) { // for loop to add every element in thhe high score array
     output += '<p>' + highScoreNames[i] + ':' + highScore[i] + '</p>'
   }
   document.getElementById('output').innerHTML = output
 }
 
-// Timer function that checks totaltime and the amount for every question
+/**
+* Timer function that checks totaltime and the amount for every question
+*/
+
 function totalTimeFunc () {
   timerInterval = setInterval(function () {
     totalTime++
     questionTime++
     document.querySelector('#totalTime').innerHTML = 'total time = ' + totalTime
     document.querySelector('#questionTime').innerHTML = 'remaining time = ' + (20 - questionTime)
-    if (questionTime === 20) {
+    if (questionTime === 20) { // if time equals 20 the user will lose
       lostGame()
     }
   }, 1000)
